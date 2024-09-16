@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Variables
-LOG_FILE="audit_logs.txt"
+LOG_FILE="new_audit_test.logs"
 CONF_FILE="search.conf"
 TEMP_CONF_FILE="search_temp.conf"
-ARTIFACTORY_URL="https://artifactory.example.com/artifactory"
-ARTIFACTORY_REPO="path/to/repo"
-ARTIFACTORY_USERNAME="your_artifactory_username"
-ARTIFACTORY_PASSWORD="your_artifactory_password"
+# ARTIFACTORY_URL="https://artifactory.example.com/artifactory"
+# ARTIFACTORY_REPO="path/to/repo"
+# ARTIFACTORY_USERNAME="your_artifactory_username"
+# ARTIFACTORY_PASSWORD="your_artifactory_password"
 
 # Create a backup of the original configuration
 cp $CONF_FILE $TEMP_CONF_FILE
@@ -35,6 +35,8 @@ done < $LOG_FILE
 
 # Replace the old configuration file with the updated one
 mv $TEMP_CONF_FILE $CONF_FILE
+
+cat $CONF_FILE
 
 # Upload the updated file to Artifactory
 echo "Uploading to Artifactory..."
