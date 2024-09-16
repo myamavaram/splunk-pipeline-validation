@@ -1,4 +1,3 @@
 _timestamp         | action  | user         | sourcetype    | details
-2024-09-12 12:00:00 | edit    | admin        | audit_app     | "Modified search.conf"
 2024-09-12 12:05:00 | add     | admin        | audit_app     | "Added new setting to search.conf"
 2024-09-12 12:10:00 | delete  | admin        | audit_app     | "Removed old setting from search.conf"
