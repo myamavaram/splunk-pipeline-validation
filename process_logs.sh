@@ -20,3 +20,8 @@ while read -r timestamp action user sourcetype details; do
     echo "Sourcetype: $sourcetype"
     echo "Details: $details"
 done < "$log_file"
+
+config_file="search.conf"
+grep -q "add" audit_logs.txt && echo "Updating settings in $config_file" >> "$config_file"
+
+cat $config_file
