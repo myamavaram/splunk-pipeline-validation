@@ -22,6 +22,7 @@ while read -r timestamp action user sourcetype details; do
 done < "$log_file"
 
 config_file="search.conf"
-grep -q "add" audit_logs.txt && echo "Updating settings in $config_file" >> "$config_file"
+grep -q "add" new_audit_test.logs && echo "Updating settings in $config_file" >> "$config_file"
 
+echo "cat config_file"
 cat $config_file
