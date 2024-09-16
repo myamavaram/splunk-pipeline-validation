@@ -39,7 +39,7 @@ mv $TEMP_CONF_FILE $CONF_FILE
 cat $CONF_FILE
 
 # Upload the updated file to Artifactory
-echo "Uploading to Artifactory..."
+echo "\n Uploading to Artifactory..."
 
 #curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD -T $CONF_FILE "$ARTIFACTORY_URL/$ARTIFACTORY_REPO/$(basename $CONF_FILE)"
 
