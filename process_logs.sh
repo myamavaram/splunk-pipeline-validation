@@ -4,7 +4,7 @@
 IFS='|'
 
 # Path to the audit log file
-log_file="new_audit_logs.txt"
+log_file="new_audit_text.logs"
 
 # Check if the log file exists
 if [ ! -f "$log_file" ]; then
