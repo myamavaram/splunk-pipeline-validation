@@ -20,23 +20,30 @@ while IFS='|' read -r timestamp action user sourcetype details; do
         echo "Applying edit changes..."
         # Example: Modify existing settings in the configuration
         # You might have more complex parsing logic here
-        sed -i '/old_setting/c\new_setting = updated_value' $TEMP_CONF_FILE
+        sed -i '/old_setting/c\new_setting = updated_value' search_temp.conf
+        echo "cat search_temp.conf"
+        cat search_temp.conf
     elif [[ "$action" == "add" ]]; then
         echo "Adding new settings..."
         # Add new settings
-        echo "[new_stanza]" >> $TEMP_CONF_FILE
-        echo "new_setting = added_value" >> $TEMP_CONF_FILE
+        echo "[new_stanza]" >> search_temp.conf
+        echo "new_setting = added_value" >> search_temp.conf
+        echo "cat search_temp.conf"
+        cat search_temp.conf
     elif [[ "$action" == "delete" ]]; then
         echo "Removing old settings..."
         # Remove specific settings
-        sed -i '/old_setting/d' $TEMP_CONF_FILE
+        sed -i '/old_setting/d' search_temp.conf
+        echo "cat search_temp.conf"
+        cat search_temp.conf
     fi
-done < $LOG_FILE
+done < new_audit_test.logs
 
 # Replace the old configuration file with the updated one
-mv $TEMP_CONF_FILE $CONF_FILE
+mv search_temp.conf search.conf
 
-cat $CONF_FILE
+echo "output search.conf data"
+cat search.conf
 
 # Upload the updated file to Artifactory
 echo "\n Uploading to Artifactory..."
