@@ -43,7 +43,7 @@ done < new_audit_test.logs
 mv search_temp.conf search.conf
 
 echo "output search.conf data"
-cat search.conf
+cat search_temp.conf
 
 # Upload the updated file to Artifactory
 echo "\n Uploading to Artifactory..."
