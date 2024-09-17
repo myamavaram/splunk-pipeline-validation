@@ -38,10 +38,14 @@ echo "sections $sections"
 for section in $sections; do
     # Extract content of the section from the modified file
     section_content=$(extract_section "$MODIFIED_FILE" "$section")
+    
+    # Ensure section content is properly formatted
+    section_content=$(echo "$section_content" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
     if [ -n "$section_content" ]; then
         if section_exists "$ORIGINAL_FILE" "$section"; then
             echo "Updating section [$section] in $ORIGINAL_FILE"
+            cat $section_content
 
             # Comment out the existing section and its content
             sed -e "/^\[$section\]/,/^\[/ { /^\[/!d; s/^/# / }" "$ORIGINAL_FILE" > "$TMP_FILE"
@@ -49,6 +53,7 @@ for section in $sections; do
            # Add a fresh line before appending new content
             echo >> "$TMP_FILE"
             echo "$section_content" >> "$TMP_FILE"
+            mv "$TMP_FILE" "$ORIGINAL_FILE"
         else
             echo "Appending new section [$section] to $ORIGINAL_FILE"
             echo >> "$ORIGINAL_FILE"
