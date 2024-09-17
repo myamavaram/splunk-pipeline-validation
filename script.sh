@@ -16,9 +16,10 @@ extract_section() {
     local file="$1"
     local section="$2"
     awk -v section="[$section]" '
-        /^\[/ { if (found && $0 ~ /^\[/) exit }
-        $0 ~ section { found = 1 }
-        found { print }
+        BEGIN {found = 0}
+        /^\[/{if (found && $0 ~ /^\[/) exit}
+        $0 ~ section {found = 1}
+        found {print}
     ' "$file"
 }
 
