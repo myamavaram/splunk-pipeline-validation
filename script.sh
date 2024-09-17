@@ -28,6 +28,8 @@ section_exists() {
 echo "Get the list of sections from the modified file"
 sections=$(grep -oP '^\[\K[^\]]+' "$MODIFIED_FILE")
 
+echo "sections $sections"
+
 # Extract sections from the modified file and append to the original file
 # Process each section
 for section in $sections; do
