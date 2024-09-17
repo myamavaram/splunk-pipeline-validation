@@ -7,6 +7,9 @@ ORIGINAL_FILE="savedSearch.conf"
 MODIFIED_FILE="audit.logs"
 TMP_FILE=$(mktemp)
 
+echo "cat audit.logs file"
+cat $MODIFIED_FILE
+
 # Backup the original file
 cp "$ORIGINAL_FILE" "${ORIGINAL_FILE}.bak"
 
