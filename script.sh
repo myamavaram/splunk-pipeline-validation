@@ -29,29 +29,27 @@ echo "Get the list of sections from the modified file"
 sections=$(grep -oP '^\[\K[^\]]+' "$MODIFIED_FILE")
 
 # Extract sections from the modified file and append to the original file
+# Process each section
 for section in $sections; do
+    # Extract content of the section from the modified file
     section_content=$(extract_section "$MODIFIED_FILE" "$section")
-    if [ -n "$section_content" ]; then
-        # Check if the section already exists in the original file
-        if grep -q "^\[$section\]" "$ORIGINAL_FILE"; then
-            echo "Updating section [$section] in $ORIGINAL_FILE"
-            # Comment out the existing section and replace it with the new content
-            awk -v section="[$section]" '
-                /^\[/{if (found && $0 ~ /^\[/) exit}
-                $0 ~ section {found = 1}
-                found {print "# " $0}
-                /^$/ {print; if (found) exit}
-                !found {print}
-            ' "$ORIGINAL_FILE" > "$TMP_FILE"
-            cat <<EOF >> "$TMP_FILE"
-$section_content
 
-EOF
+    if [ -n "$section_content" ]; then
+        if section_exists "$ORIGINAL_FILE" "$section"; then
+            echo "Updating section [$section] in $ORIGINAL_FILE"
+
+            # Comment out the existing section and its content
+            sed -e "/^\[$section\]/,/^\[/ { /^\[/!d; s/^/# / }" "$ORIGINAL_FILE" > "$TMP_FILE"
+
+            # Append the new section content
+            echo "$section_content" >> "$TMP_FILE"
             mv "$TMP_FILE" "$ORIGINAL_FILE"
+            echo "print modified file"
+            cat $ORIGINAL_FILE
         else
             echo "Appending new section [$section] to $ORIGINAL_FILE"
             echo "$section_content" >> "$ORIGINAL_FILE"
-            echo "final output $ORIGINAL_FILE"
+            cat $ORIGINAL_FILE
         fi
     fi
 done
