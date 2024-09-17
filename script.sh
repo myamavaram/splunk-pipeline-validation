@@ -15,12 +15,7 @@ echo "running extract section"
 extract_section() {
     local file="$1"
     local section="$2"
-    awk -v section="[$section]" '
-        BEGIN {found = 0}
-        /^\[/{if (found && $0 ~ /^\[/) exit}
-        $0 ~ section {found = 1}
-        found {print}
-    ' "$file"
+    sed -n "/^\[$section\]/,/^\[/p" "$file" | sed '$d'
 }
 
 # Get the list of sections from the modified file
