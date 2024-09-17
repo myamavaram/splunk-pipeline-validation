@@ -18,9 +18,15 @@ extract_section() {
     sed -n "/^\[$section\]/,/^\[/p" "$file" | sed '$d'
 }
 
-echo "step 2"
-# Get the list of sections from the modified file
-sections=$(awk -F '[]' '/^\[/ {print $2}' "$MODIFIED_FILE")
+echo "function to check if a section exist in a file"
+section_exists() {
+    local file="$1"
+    local section="$2"
+    grep -q "^\[$section\]" "$file"
+}
+
+echo "Get the list of sections from the modified file"
+sections=$(grep -oP '^\[\K[^\]]+' "$MODIFIED_FILE")
 
 # Extract sections from the modified file and append to the original file
 for section in $sections; do
