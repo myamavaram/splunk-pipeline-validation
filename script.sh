@@ -41,18 +41,24 @@ for section in $sections; do
             # Comment out the existing section and its content
             sed -e "/^\[$section\]/,/^\[/ { /^\[/!d; s/^/# / }" "$ORIGINAL_FILE" > "$TMP_FILE"
 
-            # Append the new section content
+           # Add a fresh line before appending new content
+            echo >> "$TMP_FILE"
             echo "$section_content" >> "$TMP_FILE"
-            mv "$TMP_FILE" "$ORIGINAL_FILE"
-            echo "print modified file"
-            cat $ORIGINAL_FILE
+            echo "print tmp file"
+            cat $TMP_FILE
         else
             echo "Appending new section [$section] to $ORIGINAL_FILE"
+            echo >> "$ORIGINAL_FILE"
             echo "$section_content" >> "$ORIGINAL_FILE"
             cat $ORIGINAL_FILE
         fi
     fi
 done
+
+# Ensure there is a newline between the last section and EOF
+echo >> "$ORIGINAL_FILE"
+
+cat $ORIGINAL_FILE
 
 # Clean up
 rm "$TMP_FILE"
