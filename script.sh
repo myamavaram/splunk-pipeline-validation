@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # File paths
 ORIGINAL_FILE="savedSearch.conf"
 MODIFIED_FILE="audit.logs"
@@ -9,14 +11,14 @@ TMP_FILE=$(mktemp)
 cp "$ORIGINAL_FILE" "${ORIGINAL_FILE}.bak"
 
 # Function to extract a section from the file
+echo "running extract section"
 extract_section() {
     local file="$1"
     local section="$2"
-    awk -v section="$section" '
-        BEGIN {found = 0}
-        /^\[/{if (found && $0 ~ /^\[/) exit}
-        $0 ~ "[" section "]" {found = 1}
-        found {print}
+    awk -v section="[$section]" '
+        /^\[/ { if (found && $0 ~ /^\[/) exit }
+        $0 ~ section { found = 1 }
+        found { print }
     ' "$file"
 }
 
