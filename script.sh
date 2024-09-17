@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File paths
-ORIGINAL_FILE="savedsearch.conf"
+ORIGINAL_FILE="savedSearch.conf"
 MODIFIED_FILE="audit.logs"
 TMP_FILE=$(mktemp)
 
