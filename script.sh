@@ -18,6 +18,7 @@ extract_section() {
     sed -n "/^\[$section\]/,/^\[/p" "$file" | sed '$d'
 }
 
+echo "step 2"
 # Get the list of sections from the modified file
 sections=$(awk -F '[]' '/^\[/ {print $2}' "$MODIFIED_FILE")
 
