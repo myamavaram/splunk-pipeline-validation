@@ -44,13 +44,10 @@ for section in $sections; do
            # Add a fresh line before appending new content
             echo >> "$TMP_FILE"
             echo "$section_content" >> "$TMP_FILE"
-            echo "print tmp file"
-            cat $TMP_FILE
         else
             echo "Appending new section [$section] to $ORIGINAL_FILE"
             echo >> "$ORIGINAL_FILE"
             echo "$section_content" >> "$ORIGINAL_FILE"
-            cat $ORIGINAL_FILE
         fi
     fi
 done
@@ -58,6 +55,7 @@ done
 # Ensure there is a newline between the last section and EOF
 echo >> "$ORIGINAL_FILE"
 
+echo "printing modified file"
 cat $ORIGINAL_FILE
 
 # Clean up
