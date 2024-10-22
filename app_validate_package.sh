@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sudo cd /opt/splunk/var/run/splunk/deploy/apps
 echo $PWD
 echo "remove .bundle file from  /opt/splunk/var/run/splunk/deploy/apps"
 sudo rm -f /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-*.bundle
