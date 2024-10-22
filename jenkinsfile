@@ -1,37 +1,169 @@
-pipeline {
+import java.text.SimpleDateFormat
+import java.util.Date
+import jenkins.model.Jenkins
+
+pipeline{
     agent any
-
-    environment {
-        ARTIFACTORY_URL = 'https://artifactory.example.com/artifactory'
-        ARTIFACTORY_REPO = 'path/to/repo'
-        ARTIFACTORY_USERNAME = 'your_artifactory_username'
-        ARTIFACTORY_PASSWORD = 'your_artifactory_password'
+    environment{
+        SPLUNK_PASSWORD=credentials('SPLUNK_PASSWORD')
+        STACK_USERNAME=credentials('STACK_USERNAME')
+        STACK_PASSWORD=credentials('STACK_PASSWORD')
+        STACK_TOKEN=credentials('STACK_TOKEN')
     }
-
-    stages {
-        stage('Checkout Code') {
-            steps {
-                // Checkout your repository that contains the configuration and scripts
-                checkout scm
+    stages{
+        stage("git checkout"){
+            steps{
+                git branch: 'feature/splunlk-latest', credentialsId: 'bb-config-new', url: 'https://myamavaram@bitbucket.org/harness-test-repo/splunk-cloud-pipeline.git'
             }
         }
-
-        stage('Process Logs and Update Configuration') {
-            steps {
-                script {
-                    // Execute the shell script
-                    sh './process_logs.sh'
+        
+        // stage("check version of acs, python and splunk-sdk"){
+        //     steps{
+        //          sh '''
+        //           python3 --version
+        //           acs version
+        //           pip show splunk-sdk
+        //          '''
+        //     }
+        // }
+        stage("import splunk application/Workspaces and untar the package"){
+            steps{
+                script{
+                    // def apiToken = credentials('splunk_api_token')
+                    // withCredentials([string(credentialsId: 'splunk_api_token', variable: 'apiToken')]) {
+                        sh """
+                            echo "untar dev package"
+                            tar -xzf DA-ESS-security-content-10-dev.tgz
+                            ls -la
+                            ls -l DA-ESS-security-content-10-dev
+                        """
+                    // }
                 }
             }
         }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully.'
+        
+        stage("replace default.meta and delete local.meta"){
+            steps{
+                sh '''
+                echo "replace replace default.meta and delete local.meta"
+                chmod +x changemeta.sh
+                ./changemeta.sh
+                
+                echo "remove [install] section and increase version"
+                chmod +x remove_incr_version.sh
+                ./remove_incr_version.sh
+                '''
+            }
         }
-        failure {
-            echo 'Pipeline failed.'
+        // stage("remove [install] section and increase version"){
+        //     steps{
+        //         sh '''
+        //         echo "remove [install] section and increase version"
+        //         chmod +x remove_incr_version.sh
+        //         ./remove_incr_version.sh
+        //         '''
+        //     }
+        // }
+        // stage("move package to /opt/splunk/etc/shcluster/apps/"){
+        //     steps{
+        //         sh '''
+        //         echo "copy package to apps folder"
+        //         cp -r ${WORKSPACE}/DA-ESS-security-content-10-dev /opt/splunk/etc/shcluster/apps/
+        //         '''
+        //     }
+        // }
+        stage("move package to /opt/splunk/etc/shcluster/apps/ and Apply splunk bundle"){
+            steps{
+               withCredentials([usernamePassword(credentialsId: 'splunk-user-psw', passwordVariable: 'splunk_password', usernameVariable: 'splunk_user')]) {
+                sh '''
+                echo "copy package to apps folder"
+                cp -r ${WORKSPACE}/DA-ESS-security-content-10-dev /opt/splunk/etc/shcluster/apps/
+                echo "run command shcluster-bundle"
+                yes | sudo /opt/splunk/bin/splunk apply shcluster-bundle -action stage -target /opt/splunk/etc/shcluster/apps/DA-ESS-security-content-10-dev
+                '''
+                } 
+            }
+        }
+        // stage("remove .bundle file and check the files available"){
+        //     steps{
+        //         script{
+        //             // s -l /opt/splunk/var/run/splunk/deploy/apps
+        //             // echo "removing the bundle"
+        //             // rm -f /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-*.bundle
+        //             // echo "check the files availability"
+        //             // ls -l /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev
+        //             sh '''
+        //             echo "removing the bundle"
+        //             sudo rm -f /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-*.bundle
+        //             sudo ls -l /opt/splunk/var/run/splunk/deploy/apps
+        //             '''
+        //         }
+        //     }
+        // }
+        stage("slim validate and package"){
+            steps{
+                script{
+                     sh '''
+                        sudo chmod +x app_validate_package.sh
+                        sudo sh app_validate_package.sh
+                    '''
+                    // sudo cd /opt/splunk/var/run/splunk/deploy/apps
+                }
+            }
+        }
+         stage("stack config and acs login"){
+            steps{
+                sh '''
+                sudo chmod +x stack_config_acs_login.sh
+                ./stack_config_acs_login.sh
+                '''
+            }
+     }
+    //     stage("splunk-appinspect"){
+    //     steps{
+    //         sh '''
+    //         sudo splunk-appinspect inspect /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev-1.0.1.tar.gz --included-tags cloud --included-tags self-service --excluded-tags splunk-appinspect
+    //         '''
+    //     }
+    //  }
+    //  stage('Approval') {
+    //         steps {
+    //             script {
+    //                 def userInput = input(
+    //                     id: 'Approval', // Optional: unique id for this input
+    //                     message: 'Is everything looks good!!! Do you want to proceed with the Git push?',
+    //                     parameters: [
+    //                         [$class: 'BooleanParameterDefinition', name: 'Approve', defaultValue: true, description: 'Approve to continue?']
+    //                     ]
+    //                 )
+
+    //                 // Handle user input
+    //                 if (!userInput) {
+    //                     error 'Approval denied, stopping the pipeline.'
+    //                 }
+    //             }
+    //         }
+    //     }
+    //  stage("git push"){
+    //      steps{
+    //          withCredentials([gitUsernamePassword(credentialsId: 'bb-config-new', gitToolName: 'Default')]) {
+    //           sh '''
+    //              echo "deployed"
+    //              git add .
+    //              git checkout -b feature/splunk-${BUILD_NUMBER}
+    //              git remote -v
+    //              git commit -m "Automatic changes commiting"
+    //              git branch
+    //              git push origin feature/splunk-${BUILD_NUMBER}
+    //             '''   
+    //          }
+    //      }
+    //  }
+    }
+    post {
+      // Clean after build
+        always {
+            cleanWs()
         }
     }
 }
