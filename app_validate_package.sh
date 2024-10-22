@@ -10,4 +10,4 @@ sudo ls -l DA-ESS-security-content-10-dev
 sudo ls -l DA-ESS-security-content-10-dev/default
 sudo slim validate /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev
 sudo slim package /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev
-ls -l /opt/splunk/var/run/splunk/deploy/apps
+sudo ls -l /opt/splunk/var/run/splunk/deploy/apps
