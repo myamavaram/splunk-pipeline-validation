@@ -5,7 +5,6 @@ set -e
 #sudo chmod -R 775 /opt/splunk/var/run/splunk/deploy/apps
 #cd /opt/splunk/var/run/splunk/deploy/apps
 #echo $PWD
-echo "remove .bundle file from  /opt/splunk/var/run/splunk/deploy/apps"
 sudo rm -f /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-*.bundle
 sudo ls -l /opt/splunk/var/run/splunk/deploy/apps
 echo "check the files in package"
