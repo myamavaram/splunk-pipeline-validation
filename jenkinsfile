@@ -26,7 +26,7 @@ pipeline{
         //          '''
         //     }
         // }
-        stage("import splunk application/Workspaces and untar the package"){
+        stage("Package Download"){
             steps{
                 script{
                     // def apiToken = credentials('splunk_api_token')
@@ -42,7 +42,7 @@ pipeline{
             }
         }
         
-        stage("replace default.meta and delete local.meta"){
+        stage("Metadata standardization"){
             steps{
                 sh '''
                 echo "replace replace default.meta and delete local.meta"
@@ -72,7 +72,7 @@ pipeline{
         //         '''
         //     }
         // }
-        stage("move package to /opt/splunk/etc/shcluster/apps/ and Apply splunk bundle"){
+        stage("Merging Local"){
             steps{
                withCredentials([usernamePassword(credentialsId: 'splunk-user-psw', passwordVariable: 'splunk_password', usernameVariable: 'splunk_user')]) {
                 sh '''
@@ -84,7 +84,7 @@ pipeline{
                 } 
             }
         }
-        // stage("remove .bundle file and check the files available"){
+        // stage("Cleaning and Validation"){
         //     steps{
         //         script{
         //             // s -l /opt/splunk/var/run/splunk/deploy/apps
@@ -100,7 +100,7 @@ pipeline{
         //         }
         //     }
         // }
-        stage("slim validate and package"){
+        stage("Validation"){
             steps{
                 script{
                      sh '''
@@ -111,7 +111,7 @@ pipeline{
                 }
             }
         }
-         stage("stack config and acs login"){
+         stage("ACS Publish"){
             steps{
                 sh '''
                 sudo chmod +x stack_config_acs_login.sh
