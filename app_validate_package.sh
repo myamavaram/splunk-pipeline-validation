@@ -1,12 +1,12 @@
 #!/bin/bash
-#sudo cd /opt/splunk/var/run/splunk/deploy/apps
 set -e
+#cd /opt/splunk/var/run/splunk/deploy/apps
 rm -f /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-*.bundle
 echo "running splim validation command"
 slim validate /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev
 slim package /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev -o /opt/splunk/var/run/splunk/deploy/apps
 echo "running splunk-appinspect"
-sudo splunk-appinspect inspect /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev-1.0.1.tar.gz --included-tags cloud --included-tags self-service --excluded-tags splunk-app
+splunk-appinspect inspect /opt/splunk/var/run/splunk/deploy/apps/DA-ESS-security-content-10-dev-1.0.1.tar.gz --included-tags cloud --included-tags self-service --excluded-tags splunk-app
 
 #sudo chmod -R 757 /opt/splunk/var/run/splunk/deploy
 
