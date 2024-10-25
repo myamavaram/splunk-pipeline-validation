@@ -2,7 +2,6 @@
 
 # Define the file path
 FILE="DA-ESS-security-content-10-dev/default/app.conf"
-
 # Remove the [install] section
 #sed -i '/\[install\]/,/^\[/d' "$FILE"
 sed -i '/^\[install\]/,/^\[/{/^\[ui\]/!d}' "$FILE"
