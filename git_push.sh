@@ -1,3 +1,4 @@
+echo "git commands"
 git init
 git checkout -b feature/splunk-app-package-${BUILD_NUMBER}
 git add .
